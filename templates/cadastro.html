@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% set titulo = "Cadastro de Produto" %}
+
+{% block conteudo %}
+
+<h1>{{ titulo }}</h1>
+<form method="post" action="/post_cadastro">
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required>
+    </div>
+    <div class="mb-3">
+        <label for="descricao" class="form-label">Descrição</label>
+        <textarea class="form-control" id="descricao" name="descricao" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="estoque" class="form-label">Estoque</label>
+        <input type="number" class="form-control" id="estoque" name="estoque" required>
+    </div>
+    <div class="mb-3">
+        <label for="preco" class="form-label">Preço</label>
+        <input type="number" class="form-control" id="preco" name="preco" step="0.01" required>
+    </div>
+    <div class="mb-3">
+        <label for="categoria" class="form-label">Categoria</label>
+        <select class="form-select" id="categoria" name="categoria" required>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Limpeza">Limpeza</option>
+            <option value="Eletrônicos">Eletrônicos</option>
+            <option value="Brinquedos">Brinquedos</option>
+            <option value="Vestuário">Vestuário</option>
+            <option value="Automotivo">Automotivo</option>
+            <option value="Esporte&Lazer">Esporte & Lazer</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar Produto</button>
+</form>
+{% endblock %}

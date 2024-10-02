@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.requests import Request
+import uvicorn
 
 app = FastAPI()
 
@@ -12,8 +13,21 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 def paginaInicial(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+  return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/cadastro", response_class=HTMLResponse)
+async def cadastro(request: Request):
+  return templates.TemplateResponse("cadastro.html", {"request": request})
+
+@app.post("/post_cadastro")
+async def post_cadastro(
+    nome: str = Form(...), 
+    descricao: str = Form(...),
+    estoque: int = Form(...),
+    preco: float = Form(...), 
+    categoria: str = Form(...)):
+  return RedirectResponse("/", status_code=303)
+
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", port=8000, reload=True)
+  uvicorn.run("main:app", port=8000, reload=True)

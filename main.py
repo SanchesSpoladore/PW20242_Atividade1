@@ -20,12 +20,7 @@ async def cadastro(request: Request):
   return templates.TemplateResponse("cadastro.html", {"request": request})
 
 @app.post("/post_cadastro")
-async def post_cadastro(
-    nome: str = Form(...), 
-    descricao: str = Form(...),
-    estoque: int = Form(...),
-    preco: float = Form(...), 
-    categoria: str = Form(...)):
+def post_cadastro(nome: str = Form(...), descricao: str = Form(...), estoque: int = Form(...), preco: float = Form(...), categoria: str = Form(...)):
   return RedirectResponse("/", status_code=303)
 
 

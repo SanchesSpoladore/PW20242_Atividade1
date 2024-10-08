@@ -1,42 +1,42 @@
-from fastapi import FastAPI, Form
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
-from starlette.requests import Request
-import sqlite3
+from fastapi.templating import Jinja2Templates
+from repositories.produto_repo import inserir, criar_tabela
+from models.produto_model import Produto
 import uvicorn
-from sql.produto_sql import SQL_CRIAR_TABELA, SQL_INSERIR
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-def criar_tabela():
-    conn = sqlite3.connect('produtos.db')
-    cursor = conn.cursor()
-    cursor.execute(SQL_CRIAR_TABELA)
-    conn.commit()
-    conn.close()
-
-@app.get("/", response_class=HTMLResponse)
-def paginaInicial(request: Request):
+@app.get("/")
+async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/cadastro", response_class=HTMLResponse)
+@app.get("/cadastro")
 async def cadastro(request: Request):
     return templates.TemplateResponse("cadastro.html", {"request": request})
 
 @app.post("/post_cadastro")
-def post_cadastro(nome: str = Form(...), descricao: str = Form(...), estoque: int = Form(...), preco: float = Form(...), categoria: str = Form(...)):
-    conn = sqlite3.connect('produtos.db')
-    cursor = conn.cursor()
+async def post_cadastro(
+  nome: str = Form(...), 
+  descricao: str = Form(...), 
+  estoque: int = Form(...), 
+  preco: float = Form(...), 
+  categoria: str = Form(...)):
+    try:
+        produto = Produto(nome=nome, descricao=descricao, estoque=estoque, preco=preco, categoria=categoria)
+        inserir(produto)
+        return RedirectResponse(url="/cadastro_recebido", status_code=303)
+    except Exception as e:
+        print(f"Erro ao inserir produto: {e}")
+        return RedirectResponse(url="/cadastro", status_code=303)
 
-    cursor.execute(SQL_INSERIR, (nome, descricao, estoque, preco, categoria))
-    conn.commit()
-    conn.close()
-
-    return RedirectResponse("/", status_code=303)
+@app.get("/cadastro_recebido")
+async def cadastro_recebido(request: Request):
+    return templates.TemplateResponse("cadastro_recebido.html", {"request": request})
 
 if __name__ == "__main__":
     criar_tabela()
